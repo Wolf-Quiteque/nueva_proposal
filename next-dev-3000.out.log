@@ -1,0 +1,13 @@
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.18.5:3000
+✓ Ready in 2.3s
+Creating turbopack project { dir: 'D:\\luxury-proposal-website', testMode: true }
+
+○ Compiling / ...
+ GET / 200 in 2.6s (next.js: 19ms, application-code: 2.5s)
+ GET / 200 in 672ms (next.js: 242ms, application-code: 429ms)
+✓ Compiled in 4.9s
+ GET / 200 in 973ms (next.js: 292ms, application-code: 680ms)
+ GET / 200 in 449ms (next.js: 133ms, application-code: 315ms)
+ GET / 200 in 119ms (next.js: 8ms, application-code: 111ms)
