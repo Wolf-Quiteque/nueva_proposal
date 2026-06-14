@@ -25,6 +25,13 @@ type CountryRow = {
   unique_visitors: number
 }
 
+type RegionRow = {
+  region: string
+  country: string
+  views: number
+  unique_visitors: number
+}
+
 async function logout() {
   "use server"
 
@@ -70,7 +77,7 @@ function TimeSeriesList({ rows }: { rows: TimeSeriesRow[] }) {
 async function getDashboardData() {
   const sql = getSql()
 
-  const [summaryRows, dailyRows, monthlyRows, countryRows, inquiryRows] = await Promise.all([
+  const [summaryRows, dailyRows, monthlyRows, countryRows, regionRows, inquiryRows] = await Promise.all([
     sql`
       select
         (select count(*)::int from page_views) as total_views,
@@ -112,6 +119,17 @@ async function getDashboardData() {
     `,
     sql`
       select
+        coalesce(region, 'Unknown') as region,
+        coalesce(country, 'Unknown') as country,
+        count(*)::int as views,
+        count(distinct visitor_key)::int as unique_visitors
+      from page_views
+      group by region, country
+      order by views desc
+      limit 10
+    `,
+    sql`
+      select
         id::text,
         full_name,
         email,
@@ -133,6 +151,7 @@ async function getDashboardData() {
     dailyRows: dailyRows as TimeSeriesRow[],
     monthlyRows: monthlyRows as TimeSeriesRow[],
     countryRows: countryRows as CountryRow[],
+    regionRows: regionRows as RegionRow[],
     inquiryRows: inquiryRows as AdminInquiry[],
   }
 }
@@ -145,7 +164,7 @@ export default async function AdminDashboardPage() {
     redirect("/admin/login")
   }
 
-  const { summary, dailyRows, monthlyRows, countryRows, inquiryRows } = await getDashboardData()
+  const { summary, dailyRows, monthlyRows, countryRows, regionRows, inquiryRows } = await getDashboardData()
 
   return (
     <main className="min-h-screen bg-neutral-100 text-neutral-950">
@@ -191,34 +210,69 @@ export default async function AdminDashboardPage() {
           </div>
         </section>
 
-        <section className="rounded-lg border border-neutral-200 bg-white p-6">
-          <h2 className="mb-5 text-lg font-medium">Top Countries</h2>
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[32rem] text-left text-sm">
-              <thead className="border-b border-neutral-200 text-xs uppercase tracking-[0.18em] text-neutral-400">
-                <tr>
-                  <th className="py-3 font-medium">Country</th>
-                  <th className="py-3 font-medium">Views</th>
-                  <th className="py-3 font-medium">Unique Visitors</th>
-                </tr>
-              </thead>
-              <tbody>
-                {countryRows.map((row) => (
-                  <tr key={row.country} className="border-b border-neutral-100">
-                    <td className="py-3">{row.country}</td>
-                    <td className="py-3">{row.views.toLocaleString()}</td>
-                    <td className="py-3">{row.unique_visitors.toLocaleString()}</td>
-                  </tr>
-                ))}
-                {countryRows.length === 0 && (
+        <section className="grid gap-6 lg:grid-cols-2">
+          <div className="rounded-lg border border-neutral-200 bg-white p-6">
+            <h2 className="mb-5 text-lg font-medium">Top Countries</h2>
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[32rem] text-left text-sm">
+                <thead className="border-b border-neutral-200 text-xs uppercase tracking-[0.18em] text-neutral-400">
                   <tr>
-                    <td className="py-4 text-neutral-500" colSpan={3}>
-                      No location data recorded yet.
-                    </td>
+                    <th className="py-3 font-medium">Country</th>
+                    <th className="py-3 font-medium">Views</th>
+                    <th className="py-3 font-medium">Unique Visitors</th>
                   </tr>
-                )}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {countryRows.map((row) => (
+                    <tr key={row.country} className="border-b border-neutral-100">
+                      <td className="py-3">{row.country}</td>
+                      <td className="py-3">{row.views.toLocaleString()}</td>
+                      <td className="py-3">{row.unique_visitors.toLocaleString()}</td>
+                    </tr>
+                  ))}
+                  {countryRows.length === 0 && (
+                    <tr>
+                      <td className="py-4 text-neutral-500" colSpan={3}>
+                        No country data recorded yet.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="rounded-lg border border-neutral-200 bg-white p-6">
+            <h2 className="mb-5 text-lg font-medium">Top States / Regions</h2>
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[32rem] text-left text-sm">
+                <thead className="border-b border-neutral-200 text-xs uppercase tracking-[0.18em] text-neutral-400">
+                  <tr>
+                    <th className="py-3 font-medium">State / Region</th>
+                    <th className="py-3 font-medium">Country</th>
+                    <th className="py-3 font-medium">Views</th>
+                    <th className="py-3 font-medium">Unique</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {regionRows.map((row) => (
+                    <tr key={`${row.country}-${row.region}`} className="border-b border-neutral-100">
+                      <td className="py-3">{row.region}</td>
+                      <td className="py-3">{row.country}</td>
+                      <td className="py-3">{row.views.toLocaleString()}</td>
+                      <td className="py-3">{row.unique_visitors.toLocaleString()}</td>
+                    </tr>
+                  ))}
+                  {regionRows.length === 0 && (
+                    <tr>
+                      <td className="py-4 text-neutral-500" colSpan={4}>
+                        No state or region data recorded yet.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </section>
 

@@ -44,3 +44,6 @@ Creating turbopack project { dir: 'D:\\luxury-proposal-website', testMode: true 
  GET /admin 200 in 1304ms (next.js: 336ms, application-code: 968ms)
  GET /admin 200 in 485ms (next.js: 18ms, application-code: 467ms)
  GET /admin 200 in 497ms (next.js: 209ms, application-code: 288ms)
+✓ Compiled in 331ms
+ GET /admin 200 in 1409ms (next.js: 283ms, application-code: 1127ms)
+ GET /admin 200 in 1150ms (next.js: 6ms, application-code: 1144ms)
