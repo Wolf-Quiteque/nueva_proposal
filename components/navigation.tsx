@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import type { CmsContent } from "@/lib/cms-defaults"
 
-export function Navigation() {
+export function Navigation({ content }: { content: CmsContent["nav"] }) {
   const [scrolled, setScrolled] = useState(false)
 
   useEffect(() => {
@@ -26,7 +27,7 @@ export function Navigation() {
             <span className={`font-serif text-2xl tracking-wide transition-colors ${
               scrolled ? "text-foreground" : "text-white"
             }`}>
-              Nueva
+              {content.brand}
             </span>
           </Link>
           
@@ -37,7 +38,7 @@ export function Navigation() {
                 scrolled ? "text-foreground" : "text-white"
               }`}
             >
-              Experience
+              {content.experience}
             </Link>
             <Link 
               href="#gallery" 
@@ -45,7 +46,7 @@ export function Navigation() {
                 scrolled ? "text-foreground" : "text-white"
               }`}
             >
-              Gallery
+              {content.gallery}
             </Link>
             <Link 
               href="#inquiry" 
@@ -53,7 +54,7 @@ export function Navigation() {
                 scrolled ? "text-foreground" : "text-white"
               }`}
             >
-              Inquire
+              {content.inquire}
             </Link>
           </div>
 
@@ -63,7 +64,7 @@ export function Navigation() {
               scrolled ? "border-foreground text-foreground" : "border-white text-white"
             }`}
           >
-            Start Planning
+            {content.cta}
           </Link>
         </div>
       </div>

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import { Heart, Flame, Flower2, ClipboardList, Camera, Sparkles } from "lucide-react"
+import type { CmsContent } from "@/lib/cms-defaults"
 
 const experiences = [
   {
@@ -36,7 +37,7 @@ const experiences = [
   }
 ]
 
-export function SignatureExperience() {
+export function SignatureExperience({ content }: { content: CmsContent["signature"] }) {
   const [isVisible, setIsVisible] = useState(false)
   const sectionRef = useRef<HTMLElement>(null)
 
@@ -61,9 +62,9 @@ export function SignatureExperience() {
     <section ref={sectionRef} id="experience" className="bg-white py-32 lg:py-44">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className={`text-center transition-all duration-1000 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}>
-          <p className="text-xs tracking-[0.35em] uppercase text-neutral-400 mb-8">What We Offer</p>
+          <p className="text-xs tracking-[0.35em] uppercase text-neutral-400 mb-8">{content.eyebrow}</p>
           <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-light text-neutral-900 text-balance">
-            Our Signature Experience
+            {content.title}
           </h2>
         </div>
 
@@ -77,8 +78,8 @@ export function SignatureExperience() {
               style={{ transitionDelay: `${index * 100 + 300}ms` }}
             >
               <exp.icon className="w-8 h-8 text-neutral-900 mb-6" strokeWidth={1} />
-              <h3 className="font-serif text-2xl text-neutral-900 mb-3">{exp.title}</h3>
-              <p className="text-neutral-500 text-sm leading-relaxed">{exp.description}</p>
+              <h3 className="font-serif text-2xl text-neutral-900 mb-3">{content.cards[index]?.title || exp.title}</h3>
+              <p className="text-neutral-500 text-sm leading-relaxed">{content.cards[index]?.description || exp.description}</p>
             </div>
           ))}
         </div>

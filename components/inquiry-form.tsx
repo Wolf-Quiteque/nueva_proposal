@@ -11,15 +11,9 @@ import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import type { CmsContent } from "@/lib/cms-defaults"
 
-const backdrops = [
-  { id: "glass-house", label: "Glass House", image: "/backdrops/glass-house.png" },
-  { id: "rooftop", label: "Rooftop", image: "/backdrops/rooftop.png" },
-  { id: "skyline", label: "Skyline", image: "/backdrops/skyline.png" },
-  { id: "beach", label: "Beach", image: "/backdrops/beach.png" },
-  { id: "white-cyc-wall", label: "White Cyc Wall", image: "/backdrops/white-cyc-wall.png" },
-  { id: "custom", label: "Custom Proposal", image: "/backdrops/custom.png" },
-]
+const backdropIds = ["glass-house", "rooftop", "skyline", "beach", "white-cyc-wall", "custom"]
 
 const eventTypes = ["Proposal", "Micro Wedding", "Birthday", "Bridal Shower", "Elopement", "Other"]
 const LOCATION_YES = "Yes"
@@ -92,9 +86,14 @@ function ChipGroup({
   )
 }
 
-export function InquiryForm() {
+export function InquiryForm({ content }: { content: CmsContent["inquiry"] }) {
   const [isVisible, setIsVisible] = useState(false)
   const sectionRef = useRef<HTMLElement>(null)
+  const backdrops = content.backdrops.map((option, index) => ({
+    id: backdropIds[index] || option.label.toLowerCase().replaceAll(" ", "-"),
+    label: option.label,
+    image: option.image,
+  }))
 
   const [contactMethod, setContactMethod] = useState<string[]>([])
   const [eventType, setEventType] = useState<string>("")
@@ -224,12 +223,12 @@ export function InquiryForm() {
       setAgreed(false)
       setNotification({
         type: "success",
-        message: "Inquiry sent. We'll be in touch soon.",
+        message: content.successMessage,
       })
     } catch {
       setNotification({
         type: "error",
-        message: "Something went wrong. Please try again.",
+        message: content.errorMessage,
       })
     } finally {
       setIsSubmitting(false)
@@ -272,15 +271,12 @@ export function InquiryForm() {
         <div
           className={`text-center mb-16 transition-all duration-1000 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}
         >
-          <p className="text-xs tracking-[0.35em] uppercase text-neutral-400 mb-6">Begin Your Journey</p>
-          <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-light text-neutral-900">Ready To Start Your</h2>
+          <p className="text-xs tracking-[0.35em] uppercase text-neutral-400 mb-6">{content.eyebrow}</p>
+          <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-light text-neutral-900">{content.titleLine1}</h2>
           <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-light text-neutral-900 italic mt-2">
-            Together Forever?
+            {content.titleLine2}
           </h2>
-          <p className="mt-8 text-neutral-500 leading-relaxed max-w-xl mx-auto">
-            Share a few details below and we&apos;ll reach out within 24 hours. Every detail stays discreet — your
-            surprise is safe with us.
-          </p>
+          <p className="mt-8 text-neutral-500 leading-relaxed max-w-xl mx-auto">{content.description}</p>
         </div>
 
         <form
@@ -288,37 +284,37 @@ export function InquiryForm() {
           className={`space-y-8 transition-all duration-1000 delay-300 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}
         >
           {/* Section 1 — Contact */}
-          <SectionHeading index="01" title="Contact" />
+          <SectionHeading index="01" title={content.contactTitle} />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-3">
               <Label htmlFor="name" className={labelClasses}>
-                Full Name
+                {content.fullNameLabel}
               </Label>
-              <Input id="name" name="fullName" placeholder="Your name" className={inputClasses} required />
+              <Input id="name" name="fullName" placeholder={content.fullNamePlaceholder} className={inputClasses} required />
             </div>
             <div className="space-y-3">
               <Label htmlFor="email" className={labelClasses}>
-                Email
+                {content.emailLabel}
               </Label>
-              <Input id="email" name="email" type="email" placeholder="your@email.com" className={inputClasses} required />
+              <Input id="email" name="email" type="email" placeholder={content.emailPlaceholder} className={inputClasses} required />
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-3">
               <Label htmlFor="phone" className={labelClasses}>
-                Phone
+                {content.phoneLabel}
               </Label>
-              <Input id="phone" name="phone" type="tel" placeholder="(555) 000-0000" className={inputClasses} required />
+              <Input id="phone" name="phone" type="tel" placeholder={content.phonePlaceholder} className={inputClasses} required />
             </div>
             <div className="space-y-3">
               <Label htmlFor="best-time" className={labelClasses}>
-                Best Time To Call
+                {content.bestTimeLabel}
               </Label>
-              <Input id="best-time" name="bestTimeToCall" placeholder="e.g. Weekday evenings" className={inputClasses} />
+              <Input id="best-time" name="bestTimeToCall" placeholder={content.bestTimePlaceholder} className={inputClasses} />
             </div>
           </div>
           <div className="space-y-4">
-            <Label className={labelClasses}>Preferred Communication</Label>
+            <Label className={labelClasses}>{content.communicationLabel}</Label>
             <ChipGroup
               options={contactMethods}
               selected={contactMethod}
@@ -328,22 +324,21 @@ export function InquiryForm() {
           </div>
 
           {/* Section 2 — Social */}
-          <SectionHeading index="02" title="Social" />
+          <SectionHeading index="02" title={content.socialTitle} />
           <div className="space-y-3">
             <Label htmlFor="handle" className={labelClasses}>
-              Social Media Handle
+              {content.socialHandleLabel}
             </Label>
-            <Input id="handle" name="socialHandle" placeholder="@yourhandle" className={inputClasses} />
+            <Input id="handle" name="socialHandle" placeholder={content.socialHandlePlaceholder} className={inputClasses} />
             <p className="text-neutral-400 text-sm italic leading-relaxed">
-              If your account is private, please check your message requests so our DM doesn&apos;t get missed. If we
-              don&apos;t hear back after our DM, we&apos;ll try reaching you by phone.
+              {content.socialNote}
             </p>
           </div>
 
           {/* Section 3 — Your Event */}
-          <SectionHeading index="03" title="Your Event" />
+          <SectionHeading index="03" title={content.eventTitle} />
           <div className="space-y-4">
-            <Label className={labelClasses}>Event Type</Label>
+            <Label className={labelClasses}>{content.eventTypeLabel}</Label>
             <ChipGroup
               options={eventTypes}
               selected={eventType ? [eventType] : []}
@@ -352,13 +347,13 @@ export function InquiryForm() {
             {eventType === "Other" && (
               <div className="space-y-3 pt-2">
                 <Label htmlFor="other-event-type" className={labelClasses}>
-                  Tell Us What Your Event Is About?
+                  {content.otherEventLabel}
                 </Label>
                 <Input
                   id="other-event-type"
                   value={otherEventType}
                   onChange={(e) => setOtherEventType(e.target.value)}
-                  placeholder="Share your event type"
+                  placeholder={content.otherEventPlaceholder}
                   className={inputClasses}
                   required
                 />
@@ -368,7 +363,7 @@ export function InquiryForm() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-3">
               <Label htmlFor="date" className={labelClasses}>
-                Desired Date
+                {content.desiredDateLabel}
               </Label>
               <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
                 <PopoverTrigger asChild>
@@ -379,7 +374,7 @@ export function InquiryForm() {
                     className={`${inputClasses} flex w-full items-center justify-between border px-4 text-left text-base font-normal disabled:opacity-40`}
                   >
                     <span className={desiredDate ? "text-neutral-900" : "text-neutral-400"}>
-                      {dateFlexible ? "Flexible / TBD" : desiredDate ? formatEventDate(desiredDate) : "Preferred date"}
+                      {dateFlexible ? "Flexible / TBD" : desiredDate ? formatEventDate(desiredDate) : content.datePlaceholder}
                     </span>
                     <CalendarIcon className="h-5 w-5 text-neutral-400" aria-hidden="true" />
                   </button>
@@ -403,18 +398,18 @@ export function InquiryForm() {
                   onCheckedChange={(c) => handleDateFlexibleChange(c === true)}
                   className="border-neutral-300 data-[state=checked]:bg-neutral-900 data-[state=checked]:border-neutral-900 rounded-sm"
                 />
-                <span className="text-neutral-500 text-sm">My date is flexible / TBD</span>
+                <span className="text-neutral-500 text-sm">{content.flexibleDateText}</span>
               </label>
             </div>
             <div className="space-y-3">
               <Label htmlFor="time" className={labelClasses}>
-                Preferred Time
+                {content.preferredTimeLabel}
               </Label>
-              <Input id="time" name="preferredTime" placeholder="e.g. Sunset" className={inputClasses} />
+              <Input id="time" name="preferredTime" placeholder={content.preferredTimePlaceholder} className={inputClasses} />
             </div>
           </div>
           <div className="space-y-4">
-            <Label className={labelClasses}>Do You Have A Location Secured?</Label>
+            <Label className={labelClasses}>{content.locationQuestion}</Label>
             <ChipGroup
               options={locationOptions}
               selected={locationSecured ? [locationSecured] : []}
@@ -423,13 +418,13 @@ export function InquiryForm() {
             {locationSecured === LOCATION_YES && (
               <div className="space-y-3 pt-2">
                 <Label htmlFor="location-details" className={labelClasses}>
-                  Location Name Or Address
+                  {content.locationDetailsLabel}
                 </Label>
                 <Input
                   id="location-details"
                   value={locationDetails}
                   onChange={(e) => setLocationDetails(e.target.value)}
-                  placeholder="Venue name or address"
+                  placeholder={content.locationDetailsPlaceholder}
                   className={inputClasses}
                   required
                 />
@@ -440,9 +435,9 @@ export function InquiryForm() {
           {locationSecured === LOCATION_NEEDS_RECOMMENDATIONS && (
             <>
               {/* Section 4 — Choose Your Inspiration */}
-              <SectionHeading index="04" title="Choose Your Inspiration" />
+              <SectionHeading index="04" title={content.inspirationTitle} />
               <p className="text-neutral-500 text-sm leading-relaxed -mt-2">
-                Select the backdrop that speaks to your vision. We&apos;ll tailor every detail from there.
+                {content.inspirationDescription}
               </p>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {backdrops.map((option) => {
@@ -485,9 +480,9 @@ export function InquiryForm() {
           )}
 
           {/* Section 5 — Vision & Add-ons */}
-          <SectionHeading index="05" title="Your Vision" />
+          <SectionHeading index="05" title={content.visionTitle} />
           <div className="space-y-4">
-            <Label className={labelClasses}>Add-Ons (Optional)</Label>
+            <Label className={labelClasses}>{content.addOnsLabel}</Label>
             <ChipGroup
               options={addOnOptions}
               selected={addOns}
@@ -497,12 +492,12 @@ export function InquiryForm() {
           </div>
           <div className="space-y-3">
             <Label htmlFor="vision" className={labelClasses}>
-              Tell Us About Your Vision
+              {content.visionLabel}
             </Label>
             <Textarea
               id="vision"
               name="vision"
-              placeholder="Share your story, ideas, and dreams for this moment..."
+              placeholder={content.visionPlaceholder}
               rows={6}
               className="bg-white border-neutral-200 text-neutral-900 placeholder:text-neutral-400 focus:border-neutral-900 rounded-lg resize-none"
             />
@@ -516,8 +511,7 @@ export function InquiryForm() {
               className="mt-1 border-neutral-300 data-[state=checked]:bg-neutral-900 data-[state=checked]:border-neutral-900 rounded-sm"
             />
             <span className="text-neutral-500 text-sm leading-relaxed">
-              I understand that submitting this form does not confirm my booking. A 30% deposit secures my date once
-              availability is confirmed.
+              {content.termsText}
             </span>
           </label>
 
@@ -527,7 +521,7 @@ export function InquiryForm() {
               disabled={!agreed || isSubmitting}
               className="w-full bg-neutral-900 hover:bg-neutral-800 text-white h-16 text-sm tracking-widest uppercase rounded-full transition-all disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              {isSubmitting ? "Sending Inquiry..." : "Start Planning"}
+              {isSubmitting ? content.submittingButton : content.submitButton}
             </Button>
           </div>
         </form>

@@ -1,6 +1,7 @@
 import Link from "next/link"
+import type { CmsContent } from "@/lib/cms-defaults"
 
-export function Footer() {
+export function Footer({ content }: { content: CmsContent["footer"] }) {
   return (
     <footer className="bg-background py-20 border-t border-border">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -8,38 +9,38 @@ export function Footer() {
           {/* Brand */}
           <div>
             <Link href="/" className="font-serif text-3xl tracking-wide text-foreground">
-              Nueva
+              {content.brand}
             </Link>
             <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
-              Luxury proposal experiences,<br />
-              designed and planned with intention.
+              {content.taglineLine1}<br />
+              {content.taglineLine2}
             </p>
           </div>
 
           {/* Contact */}
           <div>
-            <h4 className="text-sm tracking-[0.2em] uppercase text-foreground mb-6">Contact</h4>
+            <h4 className="text-sm tracking-[0.2em] uppercase text-foreground mb-6">{content.contactTitle}</h4>
             <div className="space-y-3 text-sm text-muted-foreground">
-              <p>Bilal Gilbert</p>
-              <p>Houston, Texas</p>
-              <a href="tel:346-243-2684" className="block hover:text-[#8B2635] transition-colors">
-                346-243-2684
+              <p>{content.contactName}</p>
+              <p>{content.contactLocation}</p>
+              <a href={`tel:${content.phone}`} className="block hover:text-[#8B2635] transition-colors">
+                {content.phone}
               </a>
             </div>
           </div>
 
           {/* Navigation */}
           <div>
-            <h4 className="text-sm tracking-[0.2em] uppercase text-foreground mb-6">Navigate</h4>
+            <h4 className="text-sm tracking-[0.2em] uppercase text-foreground mb-6">{content.navigateTitle}</h4>
             <div className="space-y-3 text-sm">
               <Link href="#experience" className="block text-muted-foreground hover:text-[#8B2635] transition-colors">
-                Experience
+                {content.experience}
               </Link>
               <Link href="#gallery" className="block text-muted-foreground hover:text-[#8B2635] transition-colors">
-                Gallery
+                {content.gallery}
               </Link>
               <Link href="#inquiry" className="block text-muted-foreground hover:text-[#8B2635] transition-colors">
-                Inquire
+                {content.inquire}
               </Link>
             </div>
           </div>
@@ -47,10 +48,10 @@ export function Footer() {
 
         <div className="mt-16 pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} Nueva Proposals. All rights reserved.
+            © {new Date().getFullYear()} {content.copyright}
           </p>
           <p className="text-xs text-muted-foreground">
-            Designed with intention for unforgettable moments.
+            {content.credit}
           </p>
         </div>
       </div>

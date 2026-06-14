@@ -3,6 +3,7 @@
 import Image from "next/image"
 import { useEffect, useRef, useState, useCallback } from "react"
 import { X, ChevronLeft, ChevronRight } from "lucide-react"
+import type { CmsContent } from "@/lib/cms-defaults"
 
 const galleryImages = [
   {
@@ -73,10 +74,11 @@ const galleryImages = [
   },
 ]
 
-export function EditorialGallery() {
+export function EditorialGallery({ content }: { content: CmsContent["gallery"] }) {
   const [isVisible, setIsVisible] = useState(false)
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
   const sectionRef = useRef<HTMLElement>(null)
+  const images = content.images.length > 0 ? content.images : galleryImages
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -97,12 +99,12 @@ export function EditorialGallery() {
 
   const close = useCallback(() => setActiveIndex(null), [])
   const next = useCallback(
-    () => setActiveIndex((i) => (i === null ? i : (i + 1) % galleryImages.length)),
-    []
+    () => setActiveIndex((i) => (i === null ? i : (i + 1) % images.length)),
+    [images.length]
   )
   const prev = useCallback(
-    () => setActiveIndex((i) => (i === null ? i : (i - 1 + galleryImages.length) % galleryImages.length)),
-    []
+    () => setActiveIndex((i) => (i === null ? i : (i - 1 + images.length) % images.length)),
+    [images.length]
   )
 
   useEffect(() => {
@@ -120,7 +122,7 @@ export function EditorialGallery() {
     }
   }, [activeIndex, close, next, prev])
 
-  const active = activeIndex === null ? null : galleryImages[activeIndex]
+  const active = activeIndex === null ? null : images[activeIndex]
 
   return (
     <section ref={sectionRef} id="gallery" className="bg-white py-28 lg:py-44">
@@ -128,19 +130,19 @@ export function EditorialGallery() {
         <div
           className={`text-center mb-16 lg:mb-24 transition-all duration-1000 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}
         >
-          <p className="text-xs tracking-[0.35em] uppercase text-neutral-400 mb-6">Portfolio</p>
+          <p className="text-xs tracking-[0.35em] uppercase text-neutral-400 mb-6">{content.eyebrow}</p>
           <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-light text-neutral-900 text-balance">
-            Real Moments. Real Love.
+            {content.titleLine1}
           </h2>
           <p className="font-serif text-4xl md:text-5xl lg:text-6xl font-light text-neutral-900 italic mt-2">
-            Real Forever.
+            {content.titleLine2}
           </p>
         </div>
 
         <div
           className={`grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 auto-rows-[44vw] sm:auto-rows-[220px] md:auto-rows-[280px] transition-all duration-1000 delay-300 ${isVisible ? "opacity-100" : "opacity-0"}`}
         >
-          {galleryImages.map((image, index) => (
+          {images.map((image, index) => (
             <button
               key={image.src}
               type="button"
@@ -218,7 +220,7 @@ export function EditorialGallery() {
           </div>
 
           <p className="absolute bottom-8 left-0 right-0 text-center text-xs tracking-[0.25em] uppercase text-neutral-400">
-            {activeIndex! + 1} / {galleryImages.length}
+            {activeIndex! + 1} / {images.length}
           </p>
         </div>
       )}

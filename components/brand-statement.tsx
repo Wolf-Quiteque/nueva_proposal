@@ -2,8 +2,9 @@
 
 import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
+import type { CmsContent } from "@/lib/cms-defaults"
 
-export function BrandStatement() {
+export function BrandStatement({ content }: { content: CmsContent["brand"] }) {
   const [isVisible, setIsVisible] = useState(false)
   const sectionRef = useRef<HTMLElement>(null)
 
@@ -29,8 +30,8 @@ export function BrandStatement() {
       {/* Background Image */}
       <div className="absolute inset-0">
         <Image
-          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/BYB06818-WfWJ9oc4W1PUSV84UqWifocK6t5P7m.jpeg"
-          alt="Heart shaped rose arch setup"
+          src={content.image}
+          alt={content.imageAlt}
           fill
           className="object-cover"
         />
@@ -41,19 +42,19 @@ export function BrandStatement() {
       <div className="relative z-10 mx-auto max-w-4xl px-6 text-center text-white">
         <div className={`transition-all duration-1000 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}>
           <h2 className="font-serif text-5xl md:text-6xl lg:text-7xl font-light">
-            Forever Starts Here
+            {content.title}
           </h2>
         </div>
         
         <div className={`mt-10 space-y-6 transition-all duration-1000 delay-300 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}>
           <p className="text-xl md:text-2xl font-light leading-relaxed opacity-90">
-            Every detail is designed to help the moment feel effortless, romantic, and unforgettable.
+            {content.paragraph1}
           </p>
           <p className="text-lg opacity-70">
-            Because some moments deserve more than a memory.
+            {content.paragraph2}
           </p>
           <p className="font-serif text-2xl md:text-3xl italic mt-8 opacity-90">
-            They deserve to be remembered forever.
+            {content.paragraph3}
           </p>
         </div>
       </div>

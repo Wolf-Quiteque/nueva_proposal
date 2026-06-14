@@ -8,20 +8,23 @@ import { BrandStatement } from "@/components/brand-statement"
 import { InquiryForm } from "@/components/inquiry-form"
 import { Footer } from "@/components/footer"
 import { Navigation } from "@/components/navigation"
+import { getCmsContent } from "@/lib/cms"
 
-export default function Home() {
+export default async function Home() {
+  const content = await getCmsContent()
+
   return (
     <main className="min-h-screen">
-      <Navigation />
-      <Hero />
-      <MomentSection />
-      <SignatureExperience />
-      <PartnershipSection />
-      <EditorialGallery />
-      <HowItWorks />
-      <BrandStatement />
-      <InquiryForm />
-      <Footer />
+      <Navigation content={content.nav} />
+      <Hero content={content.hero} />
+      <MomentSection content={content.moment} />
+      <SignatureExperience content={content.signature} />
+      <PartnershipSection content={content.story} />
+      <EditorialGallery content={content.gallery} />
+      <HowItWorks content={content.process} />
+      <BrandStatement content={content.brand} />
+      <InquiryForm content={content.inquiry} />
+      <Footer content={content.footer} />
     </main>
   )
 }

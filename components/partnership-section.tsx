@@ -2,8 +2,9 @@
 
 import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
+import type { CmsContent } from "@/lib/cms-defaults"
 
-export function PartnershipSection() {
+export function PartnershipSection({ content }: { content: CmsContent["story"] }) {
   const [isVisible, setIsVisible] = useState(false)
   const sectionRef = useRef<HTMLElement>(null)
 
@@ -32,8 +33,8 @@ export function PartnershipSection() {
           <div className={`relative transition-opacity duration-1000 ${isVisible ? "opacity-100" : "opacity-0"}`}>
             <div className="relative aspect-[4/5] overflow-hidden rounded-xl">
               <Image
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/BYB06681-tnA0SJ0PmJGPjbVdCwSV6jUV5ZVVc7.jpeg"
-                alt="Romantic couple embracing during proposal"
+                src={content.image}
+                alt={content.imageAlt}
                 fill
                 className="object-cover"
               />
@@ -42,20 +43,20 @@ export function PartnershipSection() {
 
           {/* Content */}
           <div className={`transition-opacity duration-1000 delay-200 ${isVisible ? "opacity-100" : "opacity-0"}`}>
-            <p className="text-sm tracking-[0.3em] uppercase text-muted-foreground mb-6">The Story</p>
+            <p className="text-sm tracking-[0.3em] uppercase text-muted-foreground mb-6">{content.eyebrow}</p>
             <h2 className="font-serif text-4xl md:text-5xl font-light text-foreground leading-tight">
-              From The Question<br />To The Yes
+              {content.titleLine1}<br />{content.titleLine2}
             </h2>
             
             <div className="mt-10 space-y-6">
               <p className="text-lg text-muted-foreground leading-relaxed">
-                Every proposal we design becomes more than a setup.
+                {content.paragraph1}
               </p>
               <p className="text-lg text-foreground/80 leading-relaxed">
-                It becomes part of your story.
+                {content.paragraph2}
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                From the first glance to the moment they say yes, every detail is designed so the day becomes one you can relive for years to come.
+                {content.paragraph3}
               </p>
             </div>
 

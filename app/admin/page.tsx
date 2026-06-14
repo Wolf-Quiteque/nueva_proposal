@@ -174,11 +174,16 @@ export default async function AdminDashboardPage() {
             <p className="text-xs uppercase tracking-[0.3em] text-neutral-500">Nueva Proposals</p>
             <h1 className="font-serif text-4xl font-light">Admin Dashboard</h1>
           </div>
-          <form action={logout}>
-            <button type="submit" className="rounded-full border border-neutral-300 px-5 py-2 text-sm text-neutral-700 hover:border-neutral-950">
-              Sign Out
-            </button>
-          </form>
+          <div className="flex flex-wrap gap-3">
+            <a href="/admin/cms" className="rounded-full border border-neutral-300 px-5 py-2 text-sm text-neutral-700 hover:border-neutral-950">
+              Edit Site
+            </a>
+            <form action={logout}>
+              <button type="submit" className="rounded-full border border-neutral-300 px-5 py-2 text-sm text-neutral-700 hover:border-neutral-950">
+                Sign Out
+              </button>
+            </form>
+          </div>
         </div>
       </header>
 

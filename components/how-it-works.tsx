@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import type { CmsContent } from "@/lib/cms-defaults"
 
 const steps = [
   {
@@ -25,9 +26,10 @@ const steps = [
   }
 ]
 
-export function HowItWorks() {
+export function HowItWorks({ content }: { content: CmsContent["process"] }) {
   const [isVisible, setIsVisible] = useState(false)
   const sectionRef = useRef<HTMLElement>(null)
+  const processSteps = content.steps.length > 0 ? content.steps : steps
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -50,12 +52,12 @@ export function HowItWorks() {
     <section ref={sectionRef} className="bg-background py-32 lg:py-44">
       <div className="mx-auto max-w-6xl px-6 lg:px-8">
         <div className={`text-center mb-24 transition-all duration-1000 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}>
-          <p className="text-sm tracking-[0.3em] uppercase text-muted-foreground mb-8">The Process</p>
+          <p className="text-sm tracking-[0.3em] uppercase text-muted-foreground mb-8">{content.eyebrow}</p>
           <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-light text-foreground">
-            Simple. Seamless.
+            {content.titleLine1}
           </h2>
           <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-light text-foreground italic mt-2">
-            Unforgettable.
+            {content.titleLine2}
           </h2>
         </div>
 
@@ -64,7 +66,7 @@ export function HowItWorks() {
           <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-px bg-border md:-translate-x-1/2 hidden md:block" />
           
           <div className="space-y-16 md:space-y-0">
-            {steps.map((step, index) => (
+            {processSteps.map((step, index) => (
               <div
                 key={step.number}
                 className={`relative grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 transition-all duration-1000 ${
