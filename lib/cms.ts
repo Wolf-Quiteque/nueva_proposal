@@ -28,7 +28,23 @@ function setByPath(target: Record<string, unknown>, path: string, value: string)
     current = next as Record<string, unknown>
   }
 
-  current[parts[parts.length - 1]] = value
+  const finalKey = parts[parts.length - 1]
+  const existingValue = current[finalKey]
+
+  if (Array.isArray(existingValue)) {
+    try {
+      const parsed = JSON.parse(value)
+      current[finalKey] = Array.isArray(parsed) ? parsed : existingValue
+    } catch {
+      current[finalKey] = value
+        .split("\n")
+        .map((item) => item.trim())
+        .filter(Boolean)
+    }
+    return
+  }
+
+  current[finalKey] = value
 }
 
 export function getDefaultValue(key: string) {

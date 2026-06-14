@@ -35,10 +35,11 @@ export async function PATCH(request: Request) {
 
   await ensureCmsTables()
   const sql = getSql()
+  const fieldType = field.type === "list" ? "textarea" : field.type
 
   await sql`
     insert into cms_entries (key, value, field_type, section, label, updated_at)
-    values (${field.key}, ${value}, ${field.type}, ${field.section}, ${field.label}, now())
+    values (${field.key}, ${value}, ${fieldType}, ${field.section}, ${field.label}, now())
     on conflict (key)
     do update set
       value = excluded.value,

@@ -15,20 +15,8 @@ import type { CmsContent } from "@/lib/cms-defaults"
 
 const backdropIds = ["glass-house", "rooftop", "skyline", "beach", "white-cyc-wall", "custom"]
 
-const eventTypes = ["Proposal", "Micro Wedding", "Birthday", "Bridal Shower", "Elopement", "Other"]
 const LOCATION_YES = "Yes"
 const LOCATION_NEEDS_RECOMMENDATIONS = "No - need recommendations"
-const locationOptions = [LOCATION_YES, LOCATION_NEEDS_RECOMMENDATIONS]
-const contactMethods = ["Text", "Phone Call", "Email", "Instagram DM", "TikTok DM"]
-const addOnOptions = [
-  "Sparkler Machines",
-  "Violinist",
-  "Mariachi",
-  "Photographer",
-  "Rose Bouquet",
-  "Champagne",
-  "Videographer",
-]
 
 const inputClasses =
   "bg-white border-neutral-200 text-neutral-900 placeholder:text-neutral-400 focus:border-neutral-900 rounded-lg h-14"
@@ -94,6 +82,12 @@ export function InquiryForm({ content }: { content: CmsContent["inquiry"] }) {
     label: option.label,
     image: option.image,
   }))
+  const eventTypes = content.eventTypes.length > 0 ? content.eventTypes : ["Other"]
+  const locationOptions = content.locationOptions.length > 0 ? content.locationOptions : [LOCATION_YES, LOCATION_NEEDS_RECOMMENDATIONS]
+  const locationYesOption = locationOptions[0] || LOCATION_YES
+  const locationNeedsRecommendationsOption = locationOptions[1] || LOCATION_NEEDS_RECOMMENDATIONS
+  const contactMethods = content.contactMethods
+  const addOnOptions = content.addOnOptions
 
   const [contactMethod, setContactMethod] = useState<string[]>([])
   const [eventType, setEventType] = useState<string>("")
@@ -162,10 +156,10 @@ export function InquiryForm({ content }: { content: CmsContent["inquiry"] }) {
     const nextLocationSecured = locationSecured === value ? "" : value
     setLocationSecured(nextLocationSecured)
 
-    if (nextLocationSecured !== LOCATION_YES) {
+    if (nextLocationSecured !== locationYesOption) {
       setLocationDetails("")
     }
-    if (nextLocationSecured !== LOCATION_NEEDS_RECOMMENDATIONS) {
+    if (nextLocationSecured !== locationNeedsRecommendationsOption) {
       setBackdrop("")
     }
   }
@@ -415,7 +409,7 @@ export function InquiryForm({ content }: { content: CmsContent["inquiry"] }) {
               selected={locationSecured ? [locationSecured] : []}
               onSelect={handleLocationSecuredSelect}
             />
-            {locationSecured === LOCATION_YES && (
+            {locationSecured === locationYesOption && (
               <div className="space-y-3 pt-2">
                 <Label htmlFor="location-details" className={labelClasses}>
                   {content.locationDetailsLabel}
@@ -432,7 +426,7 @@ export function InquiryForm({ content }: { content: CmsContent["inquiry"] }) {
             )}
           </div>
 
-          {locationSecured === LOCATION_NEEDS_RECOMMENDATIONS && (
+          {locationSecured === locationNeedsRecommendationsOption && (
             <>
               {/* Section 4 — Choose Your Inspiration */}
               <SectionHeading index="04" title={content.inspirationTitle} />

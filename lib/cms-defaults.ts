@@ -1,4 +1,4 @@
-export type CmsFieldType = "text" | "textarea" | "image"
+export type CmsFieldType = "text" | "textarea" | "image" | "list"
 
 export type CmsField = {
   key: string
@@ -124,6 +124,10 @@ export type CmsContent = {
     submittingButton: string
     successMessage: string
     errorMessage: string
+    eventTypes: string[]
+    locationOptions: string[]
+    contactMethods: string[]
+    addOnOptions: string[]
     backdrops: {
       label: string
       image: string
@@ -327,6 +331,18 @@ export const defaultCmsContent: CmsContent = {
     submittingButton: "Sending Inquiry...",
     successMessage: "Inquiry sent. We'll be in touch soon.",
     errorMessage: "Something went wrong. Please try again.",
+    eventTypes: ["Proposal", "Micro Wedding", "Birthday", "Bridal Shower", "Elopement", "Other"],
+    locationOptions: ["Yes", "No - need recommendations"],
+    contactMethods: ["Text", "Phone Call", "Email", "Instagram DM", "TikTok DM"],
+    addOnOptions: [
+      "Sparkler Machines",
+      "Violinist",
+      "Mariachi",
+      "Photographer",
+      "Rose Bouquet",
+      "Champagne",
+      "Videographer",
+    ],
     backdrops: [
       { label: "Glass House", image: "/backdrops/glass-house.png" },
       { label: "Rooftop", image: "/backdrops/rooftop.png" },
@@ -375,6 +391,14 @@ const image = (key: string, section: string, label: string, defaultValue: string
   label,
   type: "image",
   defaultValue,
+})
+
+const list = (key: string, section: string, label: string, defaultValue: string[]): CmsField => ({
+  key,
+  section,
+  label,
+  type: "list",
+  defaultValue: JSON.stringify(defaultValue),
 })
 
 export const cmsFields: CmsField[] = [
@@ -438,8 +462,13 @@ export const cmsFields: CmsField[] = [
   textarea("brand.paragraph2", "Brand Statement", "Paragraph 2", defaultCmsContent.brand.paragraph2),
   textarea("brand.paragraph3", "Brand Statement", "Paragraph 3", defaultCmsContent.brand.paragraph3),
 
+  list("inquiry.eventTypes", "Inquiry Form Choices", "Event Types", defaultCmsContent.inquiry.eventTypes),
+  list("inquiry.locationOptions", "Inquiry Form Choices", "Location Choices", defaultCmsContent.inquiry.locationOptions),
+  list("inquiry.contactMethods", "Inquiry Form Choices", "Preferred Communication Choices", defaultCmsContent.inquiry.contactMethods),
+  list("inquiry.addOnOptions", "Inquiry Form Choices", "Add-On Choices", defaultCmsContent.inquiry.addOnOptions),
+
   ...Object.entries(defaultCmsContent.inquiry)
-    .filter(([key]) => key !== "backdrops")
+    .filter(([key]) => !["backdrops", "eventTypes", "locationOptions", "contactMethods", "addOnOptions"].includes(key))
     .map(([key, value]) =>
       key.toLowerCase().includes("description") ||
       key.toLowerCase().includes("note") ||
