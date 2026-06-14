@@ -2,6 +2,7 @@ import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import { ADMIN_COOKIE_NAME, verifyAdminSessionValue } from "@/lib/admin-auth"
 import { getSql } from "@/lib/db"
+import { InquiryCard, type AdminInquiry } from "@/components/admin/inquiry-card"
 
 type SummaryRow = {
   total_views: number
@@ -24,34 +25,12 @@ type CountryRow = {
   unique_visitors: number
 }
 
-type InquiryRow = {
-  id: string
-  full_name: string
-  email: string
-  phone: string | null
-  event_type: string | null
-  desired_date: string | null
-  location_secured: string | null
-  location_details: string | null
-  vision: string | null
-  created_at: string
-}
-
 async function logout() {
   "use server"
 
   const cookieStore = await cookies()
   cookieStore.delete(ADMIN_COOKIE_NAME)
   redirect("/admin/login")
-}
-
-function formatDate(value: string) {
-  return new Date(value).toLocaleString("en-US", {
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  })
 }
 
 function maxViews(rows: TimeSeriesRow[]) {
@@ -145,7 +124,7 @@ async function getDashboardData() {
         created_at::text
       from inquiries
       order by created_at desc
-      limit 12
+      limit 2
     `,
   ])
 
@@ -154,7 +133,7 @@ async function getDashboardData() {
     dailyRows: dailyRows as TimeSeriesRow[],
     monthlyRows: monthlyRows as TimeSeriesRow[],
     countryRows: countryRows as CountryRow[],
-    inquiryRows: inquiryRows as InquiryRow[],
+    inquiryRows: inquiryRows as AdminInquiry[],
   }
 }
 
@@ -244,34 +223,20 @@ export default async function AdminDashboardPage() {
         </section>
 
         <section className="rounded-lg border border-neutral-200 bg-white p-6">
-          <h2 className="mb-5 text-lg font-medium">Recent Inquiries</h2>
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-lg font-medium">Recent Inquiries</h2>
+            <a
+              href="/admin/inquiries"
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-full border border-neutral-300 px-4 py-2 text-sm text-neutral-700 hover:border-neutral-950 hover:text-neutral-950"
+            >
+              See All
+            </a>
+          </div>
           <div className="grid gap-4">
             {inquiryRows.map((inquiry) => (
-              <article key={inquiry.id} className="rounded-md border border-neutral-200 p-4">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <h3 className="font-medium">{inquiry.full_name}</h3>
-                    <p className="text-sm text-neutral-500">
-                      {inquiry.email}
-                      {inquiry.phone ? ` | ${inquiry.phone}` : ""}
-                    </p>
-                  </div>
-                  <time className="text-sm text-neutral-500">{formatDate(inquiry.created_at)}</time>
-                </div>
-                <div className="mt-4 grid gap-3 text-sm md:grid-cols-3">
-                  <p>
-                    <span className="text-neutral-500">Event:</span> {inquiry.event_type || "Not provided"}
-                  </p>
-                  <p>
-                    <span className="text-neutral-500">Date:</span> {inquiry.desired_date || "Not provided"}
-                  </p>
-                  <p>
-                    <span className="text-neutral-500">Location:</span>{" "}
-                    {inquiry.location_details || inquiry.location_secured || "Not provided"}
-                  </p>
-                </div>
-                {inquiry.vision && <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-neutral-600">{inquiry.vision}</p>}
-              </article>
+              <InquiryCard key={inquiry.id} inquiry={inquiry} />
             ))}
             {inquiryRows.length === 0 && <p className="text-sm text-neutral-500">No inquiries submitted yet.</p>}
           </div>
