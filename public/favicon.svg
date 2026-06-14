@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Nueva Proposals">
+  <rect width="64" height="64" rx="14" fill="#111111"/>
+  <path d="M15 47V17h6.5l21 21.8V17H49v30h-6.4L21.5 25.1V47H15Z" fill="#fffaf2"/>
+  <path d="M16 51h32" stroke="#9f1d35" stroke-width="3" stroke-linecap="round"/>
+</svg>

@@ -15,25 +15,89 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'Nueva Proposals | Luxury Proposal Experiences in Houston',
-  description: 'Luxury proposal experiences designed and planned with intention. Houston\'s premier proposal planning service.',
-  generator: 'v0.app',
+  metadataBase: new URL('https://nuevaproposals.com'),
+  title: {
+    default: 'Nueva Proposals | Luxury Proposal Planner in Houston',
+    template: '%s | Nueva Proposals',
+  },
+  description:
+    'Luxury proposal planning in Houston with romantic heart arch setups, candle styling, florals, photography options, and curated proposal experiences.',
+  keywords: [
+    'Houston proposal planner',
+    'proposal planner Houston',
+    'luxury proposal setup Houston',
+    'romantic proposal Houston',
+    'marriage proposal planner Houston',
+    'Houston engagement proposal',
+    'proposal decorations Houston',
+    'heart arch proposal Houston',
+    'micro wedding Houston',
+    'bridal shower setup Houston',
+    'private proposal planning',
+    'Nueva Proposals',
+  ],
+  authors: [{ name: 'Nueva Proposals' }],
+  creator: 'Nueva Proposals',
+  publisher: 'Nueva Proposals',
+  applicationName: 'Nueva Proposals',
+  category: 'event planning',
+  manifest: '/site.webmanifest',
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: '/',
+    siteName: 'Nueva Proposals',
+    title: 'Nueva Proposals | Luxury Proposal Planner in Houston',
+    description:
+      'Luxury proposal planning in Houston with romantic styling, florals, candlelight, and unforgettable proposal experiences.',
+    images: [
+      {
+        url: '/og-nueva-proposals-1200x630.png',
+        width: 1200,
+        height: 630,
+        alt: 'Luxury heart-shaped rose proposal setup overlooking the Houston skyline',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Nueva Proposals | Luxury Proposal Planner in Houston',
+    description:
+      'Luxury proposal planning in Houston with romantic styling, florals, candlelight, and unforgettable proposal experiences.',
+    images: ['/og-nueva-proposals-1200x630.png'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+      'max-video-preview': -1,
+    },
+  },
   icons: {
     icon: [
       {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
+        url: '/favicon.svg',
         type: 'image/svg+xml',
       },
+      {
+        url: '/favicon-32x32.png',
+        sizes: '32x32',
+        type: 'image/png',
+      },
+      {
+        url: '/favicon-16x16.png',
+        sizes: '16x16',
+        type: 'image/png',
+      },
     ],
-    apple: '/apple-icon.png',
+    apple: '/apple-touch-icon.png',
   },
 }
 

@@ -9,12 +9,14 @@ import { InquiryForm } from "@/components/inquiry-form"
 import { Footer } from "@/components/footer"
 import { Navigation } from "@/components/navigation"
 import { getCmsContent } from "@/lib/cms"
+import { StructuredData } from "@/components/structured-data"
 
 export default async function Home() {
   const content = await getCmsContent()
 
   return (
     <main className="min-h-screen">
+      <StructuredData />
       <Navigation content={content.nav} />
       <Hero content={content.hero} />
       <MomentSection content={content.moment} />
