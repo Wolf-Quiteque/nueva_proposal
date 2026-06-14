@@ -55,7 +55,7 @@ export const metadata: Metadata = {
       'Luxury proposal planning in Houston with romantic styling, florals, candlelight, and unforgettable proposal experiences.',
     images: [
       {
-        url: '/og-nueva-proposals-1200x630.png',
+        url: '/og-whatsapp-nueva-proposals.jpg',
         width: 1200,
         height: 630,
         alt: 'Luxury heart-shaped rose proposal setup overlooking the Houston skyline',
@@ -67,7 +67,7 @@ export const metadata: Metadata = {
     title: 'Nueva Proposals | Luxury Proposal Planner in Houston',
     description:
       'Luxury proposal planning in Houston with romantic styling, florals, candlelight, and unforgettable proposal experiences.',
-    images: ['/og-nueva-proposals-1200x630.png'],
+    images: ['/og-whatsapp-nueva-proposals.jpg'],
   },
   robots: {
     index: true,

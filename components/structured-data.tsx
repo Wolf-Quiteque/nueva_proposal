@@ -5,7 +5,7 @@ export function StructuredData() {
     "@id": "https://nuevaproposals.com/#business",
     name: "Nueva Proposals",
     url: "https://nuevaproposals.com",
-    image: "https://nuevaproposals.com/og-nueva-proposals-1200x630.png",
+    image: "https://nuevaproposals.com/og-whatsapp-nueva-proposals.jpg",
     telephone: "+1-346-243-2684",
     address: {
       "@type": "PostalAddress",
