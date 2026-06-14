@@ -1,13 +1,20 @@
 ▲ Next.js 16.2.6 (Turbopack)
 - Local:         http://localhost:3000
 - Network:       http://192.168.18.5:3000
-✓ Ready in 2.3s
+- Environments: .env
+✓ Ready in 1467ms
 Creating turbopack project { dir: 'D:\\luxury-proposal-website', testMode: true }
 
-○ Compiling / ...
- GET / 200 in 2.6s (next.js: 19ms, application-code: 2.5s)
- GET / 200 in 672ms (next.js: 242ms, application-code: 429ms)
-✓ Compiled in 4.9s
- GET / 200 in 973ms (next.js: 292ms, application-code: 680ms)
- GET / 200 in 449ms (next.js: 133ms, application-code: 315ms)
- GET / 200 in 119ms (next.js: 8ms, application-code: 111ms)
+ GET / 200 in 2.5s (next.js: 735ms, application-code: 1741ms)
+ GET / 200 in 25ms (next.js: 7ms, application-code: 18ms)
+ POST /api/track-view 200 in 4.5s (next.js: 2.4s, application-code: 2.0s)
+ POST /api/inquiry 200 in 4.2s (next.js: 909ms, application-code: 3.2s)
+  Reload env: .env
+ GET / 200 in 435ms (next.js: 242ms, application-code: 193ms)
+ POST /api/inquiry 200 in 4.3s (next.js: 176ms, application-code: 4.1s)
+✓ Compiled in 1126ms
+ GET / 200 in 410ms (next.js: 168ms, application-code: 242ms)
+  Reload env: .env.local
+  Reload env: .env.local
+ GET / 200 in 25.4s (next.js: 3.0s, application-code: 22.4s)
+ GET / 200 in 2.8s (next.js: 1107ms, application-code: 1664ms)

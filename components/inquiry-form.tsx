@@ -22,6 +22,9 @@ const backdrops = [
 ]
 
 const eventTypes = ["Proposal", "Micro Wedding", "Birthday", "Bridal Shower", "Elopement", "Other"]
+const LOCATION_YES = "Yes"
+const LOCATION_NEEDS_RECOMMENDATIONS = "No - need recommendations"
+const locationOptions = [LOCATION_YES, LOCATION_NEEDS_RECOMMENDATIONS]
 const contactMethods = ["Text", "Phone Call", "Email", "Instagram DM", "TikTok DM"]
 const addOnOptions = [
   "Sparkler Machines",
@@ -100,9 +103,15 @@ export function InquiryForm() {
   const [datePickerOpen, setDatePickerOpen] = useState(false)
   const [dateFlexible, setDateFlexible] = useState(false)
   const [locationSecured, setLocationSecured] = useState<string>("")
+  const [locationDetails, setLocationDetails] = useState("")
   const [backdrop, setBackdrop] = useState<string>("")
   const [addOns, setAddOns] = useState<string[]>([])
   const [agreed, setAgreed] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [notification, setNotification] = useState<{
+    type: "success" | "error"
+    message: string
+  } | null>(null)
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -120,6 +129,15 @@ export function InquiryForm() {
 
     return () => observer.disconnect()
   }, [])
+
+  useEffect(() => {
+    if (!notification) {
+      return
+    }
+
+    const timeout = window.setTimeout(() => setNotification(null), 5000)
+    return () => window.clearTimeout(timeout)
+  }, [notification])
 
   const toggleMulti = (value: string, list: string[], setter: (v: string[]) => void) => {
     setter(list.includes(value) ? list.filter((v) => v !== value) : [...list, value])
@@ -141,25 +159,115 @@ export function InquiryForm() {
     }
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleLocationSecuredSelect = (value: string) => {
+    const nextLocationSecured = locationSecured === value ? "" : value
+    setLocationSecured(nextLocationSecured)
+
+    if (nextLocationSecured !== LOCATION_YES) {
+      setLocationDetails("")
+    }
+    if (nextLocationSecured !== LOCATION_NEEDS_RECOMMENDATIONS) {
+      setBackdrop("")
+    }
+  }
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    const form = e.currentTarget
+    const formData = new FormData(form)
     const submittedEventType = eventType === "Other" ? otherEventType : eventType
     const submittedDesiredDate = dateFlexible ? "Flexible / TBD" : desiredDate ? formatEventDate(desiredDate) : ""
+    const submittedBackdrop = backdrops.find((option) => option.id === backdrop)?.label || ""
 
-    console.log("[v0] Inquiry submitted", {
-      contactMethod,
-      eventType: submittedEventType,
-      desiredDate: submittedDesiredDate,
-      dateFlexible,
-      locationSecured,
-      backdrop,
-      addOns,
-      agreed,
-    })
+    setIsSubmitting(true)
+    setNotification(null)
+
+    try {
+      const response = await fetch("/api/inquiry", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          fullName: String(formData.get("fullName") || ""),
+          email: String(formData.get("email") || ""),
+          phone: String(formData.get("phone") || ""),
+          bestTimeToCall: String(formData.get("bestTimeToCall") || ""),
+          contactMethods: contactMethod,
+          socialHandle: String(formData.get("socialHandle") || ""),
+          eventType: submittedEventType,
+          desiredDate: submittedDesiredDate,
+          preferredTime: String(formData.get("preferredTime") || ""),
+          dateFlexible,
+          locationSecured,
+          locationDetails,
+          backdrop: submittedBackdrop,
+          addOns,
+          vision: String(formData.get("vision") || ""),
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Inquiry request failed")
+      }
+
+      form.reset()
+      setContactMethod([])
+      setEventType("")
+      setOtherEventType("")
+      setDesiredDate(undefined)
+      setDateFlexible(false)
+      setLocationSecured("")
+      setLocationDetails("")
+      setBackdrop("")
+      setAddOns([])
+      setAgreed(false)
+      setNotification({
+        type: "success",
+        message: "Inquiry sent. We'll be in touch soon.",
+      })
+    } catch {
+      setNotification({
+        type: "error",
+        message: "Something went wrong. Please try again.",
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
     <section ref={sectionRef} id="inquiry" className="bg-white py-28 lg:py-44">
+      {notification && (
+        <div
+          role="status"
+          aria-live="polite"
+          className={`fixed right-4 top-4 z-50 max-w-[calc(100vw-2rem)] rounded-lg border px-4 py-3 text-sm shadow-lg md:right-6 md:top-6 ${
+            notification.type === "success"
+              ? "border-neutral-900 bg-neutral-900 text-white"
+              : "border-red-200 bg-white text-red-700"
+          }`}
+        >
+          <div className="flex items-start gap-3">
+            <span
+              className={`mt-1 h-2 w-2 shrink-0 rounded-full ${
+                notification.type === "success" ? "bg-white" : "bg-red-500"
+              }`}
+              aria-hidden="true"
+            />
+            <p>{notification.message}</p>
+            <button
+              type="button"
+              onClick={() => setNotification(null)}
+              className={`ml-2 text-xs uppercase tracking-wider ${
+                notification.type === "success" ? "text-white/70 hover:text-white" : "text-red-400 hover:text-red-700"
+              }`}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
       <div className="mx-auto max-w-3xl px-6 lg:px-8">
         <div
           className={`text-center mb-16 transition-all duration-1000 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}
@@ -186,13 +294,13 @@ export function InquiryForm() {
               <Label htmlFor="name" className={labelClasses}>
                 Full Name
               </Label>
-              <Input id="name" placeholder="Your name" className={inputClasses} required />
+              <Input id="name" name="fullName" placeholder="Your name" className={inputClasses} required />
             </div>
             <div className="space-y-3">
               <Label htmlFor="email" className={labelClasses}>
                 Email
               </Label>
-              <Input id="email" type="email" placeholder="your@email.com" className={inputClasses} required />
+              <Input id="email" name="email" type="email" placeholder="your@email.com" className={inputClasses} required />
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -200,13 +308,13 @@ export function InquiryForm() {
               <Label htmlFor="phone" className={labelClasses}>
                 Phone
               </Label>
-              <Input id="phone" type="tel" placeholder="(555) 000-0000" className={inputClasses} required />
+              <Input id="phone" name="phone" type="tel" placeholder="(555) 000-0000" className={inputClasses} required />
             </div>
             <div className="space-y-3">
               <Label htmlFor="best-time" className={labelClasses}>
                 Best Time To Call
               </Label>
-              <Input id="best-time" placeholder="e.g. Weekday evenings" className={inputClasses} />
+              <Input id="best-time" name="bestTimeToCall" placeholder="e.g. Weekday evenings" className={inputClasses} />
             </div>
           </div>
           <div className="space-y-4">
@@ -225,7 +333,7 @@ export function InquiryForm() {
             <Label htmlFor="handle" className={labelClasses}>
               Social Media Handle
             </Label>
-            <Input id="handle" placeholder="@yourhandle" className={inputClasses} />
+            <Input id="handle" name="socialHandle" placeholder="@yourhandle" className={inputClasses} />
             <p className="text-neutral-400 text-sm italic leading-relaxed">
               If your account is private, please check your message requests so our DM doesn&apos;t get missed. If we
               don&apos;t hear back after our DM, we&apos;ll try reaching you by phone.
@@ -302,60 +410,79 @@ export function InquiryForm() {
               <Label htmlFor="time" className={labelClasses}>
                 Preferred Time
               </Label>
-              <Input id="time" placeholder="e.g. Sunset" className={inputClasses} />
+              <Input id="time" name="preferredTime" placeholder="e.g. Sunset" className={inputClasses} />
             </div>
           </div>
           <div className="space-y-4">
             <Label className={labelClasses}>Do You Have A Location Secured?</Label>
             <ChipGroup
-              options={["Yes", "No — need recommendations"]}
+              options={locationOptions}
               selected={locationSecured ? [locationSecured] : []}
-              onSelect={(v) => setLocationSecured(v === locationSecured ? "" : v)}
+              onSelect={handleLocationSecuredSelect}
             />
+            {locationSecured === LOCATION_YES && (
+              <div className="space-y-3 pt-2">
+                <Label htmlFor="location-details" className={labelClasses}>
+                  Location Name Or Address
+                </Label>
+                <Input
+                  id="location-details"
+                  value={locationDetails}
+                  onChange={(e) => setLocationDetails(e.target.value)}
+                  placeholder="Venue name or address"
+                  className={inputClasses}
+                  required
+                />
+              </div>
+            )}
           </div>
 
-          {/* Section 4 — Choose Your Inspiration */}
-          <SectionHeading index="04" title="Choose Your Inspiration" />
-          <p className="text-neutral-500 text-sm leading-relaxed -mt-2">
-            Select the backdrop that speaks to your vision. We&apos;ll tailor every detail from there.
-          </p>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {backdrops.map((option) => {
-              const isActive = backdrop === option.id
-              return (
-                <button
-                  key={option.id}
-                  type="button"
-                  aria-pressed={isActive}
-                  onClick={() => setBackdrop(isActive ? "" : option.id)}
-                  className="group relative aspect-[4/5] overflow-hidden rounded-xl bg-neutral-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900/40"
-                >
-                  <Image
-                    src={option.image || "/placeholder.svg"}
-                    alt={`${option.label} proposal backdrop`}
-                    fill
-                    sizes="(max-width: 768px) 50vw, 33vw"
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                  <div
-                    className={`absolute inset-0 transition-all duration-300 ${
-                      isActive
-                        ? "bg-neutral-900/20 ring-2 ring-inset ring-neutral-900"
-                        : "bg-neutral-900/10 group-hover:bg-neutral-900/5"
-                    }`}
-                  />
-                  {isActive && (
-                    <span className="absolute top-3 right-3 flex h-7 w-7 items-center justify-center rounded-full bg-neutral-900 text-white">
-                      <Check className="h-4 w-4" />
-                    </span>
-                  )}
-                  <span className="absolute inset-x-0 bottom-0 p-3 text-left text-white text-sm tracking-wider uppercase drop-shadow-md">
-                    {option.label}
-                  </span>
-                </button>
-              )
-            })}
-          </div>
+          {locationSecured === LOCATION_NEEDS_RECOMMENDATIONS && (
+            <>
+              {/* Section 4 — Choose Your Inspiration */}
+              <SectionHeading index="04" title="Choose Your Inspiration" />
+              <p className="text-neutral-500 text-sm leading-relaxed -mt-2">
+                Select the backdrop that speaks to your vision. We&apos;ll tailor every detail from there.
+              </p>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {backdrops.map((option) => {
+                  const isActive = backdrop === option.id
+                  return (
+                    <button
+                      key={option.id}
+                      type="button"
+                      aria-pressed={isActive}
+                      onClick={() => setBackdrop(isActive ? "" : option.id)}
+                      className="group relative aspect-[4/5] overflow-hidden rounded-xl bg-neutral-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900/40"
+                    >
+                      <Image
+                        src={option.image || "/placeholder.svg"}
+                        alt={`${option.label} proposal backdrop`}
+                        fill
+                        sizes="(max-width: 768px) 50vw, 33vw"
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                      <div
+                        className={`absolute inset-0 transition-all duration-300 ${
+                          isActive
+                            ? "bg-neutral-900/20 ring-2 ring-inset ring-neutral-900"
+                            : "bg-neutral-900/10 group-hover:bg-neutral-900/5"
+                        }`}
+                      />
+                      {isActive && (
+                        <span className="absolute top-3 right-3 flex h-7 w-7 items-center justify-center rounded-full bg-neutral-900 text-white">
+                          <Check className="h-4 w-4" />
+                        </span>
+                      )}
+                      <span className="absolute inset-x-0 bottom-0 p-3 text-left text-white text-sm tracking-wider uppercase drop-shadow-md">
+                        {option.label}
+                      </span>
+                    </button>
+                  )
+                })}
+              </div>
+            </>
+          )}
 
           {/* Section 5 — Vision & Add-ons */}
           <SectionHeading index="05" title="Your Vision" />
@@ -374,6 +501,7 @@ export function InquiryForm() {
             </Label>
             <Textarea
               id="vision"
+              name="vision"
               placeholder="Share your story, ideas, and dreams for this moment..."
               rows={6}
               className="bg-white border-neutral-200 text-neutral-900 placeholder:text-neutral-400 focus:border-neutral-900 rounded-lg resize-none"
@@ -396,10 +524,10 @@ export function InquiryForm() {
           <div className="pt-4">
             <Button
               type="submit"
-              disabled={!agreed}
+              disabled={!agreed || isSubmitting}
               className="w-full bg-neutral-900 hover:bg-neutral-800 text-white h-16 text-sm tracking-widest uppercase rounded-full transition-all disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              Start Planning
+              {isSubmitting ? "Sending Inquiry..." : "Start Planning"}
             </Button>
           </div>
         </form>
