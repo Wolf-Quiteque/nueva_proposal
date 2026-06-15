@@ -186,14 +186,18 @@ export function CmsEditor({ entries }: { entries: CmsEntry[] }) {
         body: formData,
       })
 
-      if (!response.ok) throw new Error("Upload failed")
+      if (!response.ok) {
+        const result = (await response.json().catch(() => null)) as { error?: string } | null
+        throw new Error(result?.error || "Upload failed.")
+      }
 
       const result = (await response.json()) as { url: string }
       updateValue(entry.key, result.url)
       setFieldState(entry.key, "saved")
       window.setTimeout(() => setFieldState(entry.key, "idle"), 2000)
-    } catch {
-      setUploadNotes((current) => ({ ...current, [entry.key]: "Upload failed. Check Blob setup or try a smaller image." }))
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Upload failed. Check Blob setup or try a smaller image."
+      setUploadNotes((current) => ({ ...current, [entry.key]: message }))
       setFieldState(entry.key, "error")
     }
   }
