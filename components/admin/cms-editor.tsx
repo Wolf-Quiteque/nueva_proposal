@@ -148,6 +148,7 @@ export function CmsEditor({ entries }: { entries: CmsEntry[] }) {
     try {
       const response = await fetch("/api/admin/cms", {
         method: "PATCH",
+        credentials: "same-origin",
         headers: {
           "Content-Type": "application/json",
         },
@@ -183,6 +184,7 @@ export function CmsEditor({ entries }: { entries: CmsEntry[] }) {
 
       const response = await fetch("/api/admin/cms/image", {
         method: "POST",
+        credentials: "same-origin",
         body: formData,
       })
 

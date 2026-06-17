@@ -36,7 +36,8 @@ async function logout() {
   "use server"
 
   const cookieStore = await cookies()
-  cookieStore.delete(ADMIN_COOKIE_NAME)
+  cookieStore.set(ADMIN_COOKIE_NAME, "", { maxAge: 0, path: "/" })
+  cookieStore.set(ADMIN_COOKIE_NAME, "", { maxAge: 0, path: "/admin" })
   redirect("/admin/login")
 }
 

@@ -283,3 +283,16 @@ Creating turbopack project { dir: 'D:\\luxury-proposal-website', testMode: true 
  GET / 200 in 4.9s (next.js: 204ms, application-code: 4.7s)
 ✓ Compiled in 324ms
 ✓ Compiled in 2.2s
+ GET /admin 307 in 2.7s (next.js: 1115ms, application-code: 1591ms)
+ GET /admin/login 200 in 1661ms (next.js: 306ms, application-code: 1355ms)
+ GET /?code=31b87ded-c7d4-4115-9d25-4b5ed8e179ba 200 in 7.2s (next.js: 1992ms, application-code: 5.2s)
+ POST /api/track-view 200 in 2.0s (next.js: 905ms, application-code: 1144ms)
+○ Compiling /_not-found/page ...
+ GET /login 404 in 8.9s (next.js: 7.6s, application-code: 1303ms)
+ GET / 200 in 5.9s (next.js: 649ms, application-code: 5.2s)
+ POST /api/track-view 200 in 607ms (next.js: 100ms, application-code: 507ms)
+ GET / 200 in 5.3s (next.js: 940ms, application-code: 4.4s)
+ GET / 200 in 3.9s (next.js: 35ms, application-code: 3.9s)
+ POST /api/track-view 200 in 765ms (next.js: 53ms, application-code: 712ms)
+ GET / 200 in 1788ms (next.js: 25ms, application-code: 1763ms)
+ POST /api/track-view 200 in 834ms (next.js: 11ms, application-code: 823ms)

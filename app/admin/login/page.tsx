@@ -17,12 +17,19 @@ async function login(formData: FormData) {
   }
 
   const cookieStore = await cookies()
+  cookieStore.set(ADMIN_COOKIE_NAME, "", {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 0,
+    path: "/admin",
+  })
   cookieStore.set(ADMIN_COOKIE_NAME, createAdminSessionValue(), {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
     maxAge: adminSessionMaxAge(),
-    path: "/admin",
+    path: "/",
   })
 
   redirect("/admin")
